@@ -111,8 +111,8 @@ export const crosswordProviderPropTypes = {
   onAnswerCorrect: PropTypes.func,
 
   /**
-   * callback function that fires when a player answers a clue correctly; called
-   * with `(direction, number, answer)` arguments, where `direction` is
+   * callback function that fires when a player answers a clue correctly;
+   * called with `(direction, number, answer)` arguments, where `direction` is
    * `'across'` or `'down'`, `number` is the clue number as text (like `'1'`),
    * and `answer` is the answer itself
    *
@@ -296,7 +296,7 @@ export interface CrosswordProviderImperative {
   isCrosswordCorrect: () => boolean;
 
   /**
-   * Sets the “guess” character for a specific grid position.
+   * Sets the "guess" character for a specific grid position.
    *
    * @since 4.1.0
    */
@@ -652,8 +652,46 @@ const CrosswordProvider = React.forwardRef<
 
     const moveForward = useCallback(() => {
       const across = isAcross(currentDirection);
-      moveRelative(across ? 0 : 1, across ? 1 : 0);
-    }, [currentDirection, moveRelative]);
+      const dRow = across ? 0 : 1;
+      const dCol = across ? 1 : 0;
+
+      let nextRow = focusedRow + dRow;
+      let nextCol = focusedCol + dCol;
+      let nextCell = getCellData(nextRow, nextCol);
+
+      // Keep moving forward as long as the next cell is used, part of the current clue, and already has a guess
+      while (
+        nextCell.used &&
+        nextCell[currentDirection] === currentNumber && // Check if it's part of the same clue
+        nextCell.guess // Check if it has a guess
+      ) {
+        nextRow += dRow;
+        nextCol += dCol;
+        nextCell = getCellData(nextRow, nextCol);
+      }
+
+      // If the loop terminated because the cell is not part of the current clue or not used,
+      // we might not want to move, or move to the last valid empty cell.
+      // For now, let's attempt to move to the cell found (which could be an invalid cell if we went off the clue/grid).
+      // moveRelative will handle not moving if the cell is invalid.
+      if (nextCell.used && nextCell[currentDirection] === currentNumber) {
+        // Only move if the final cell is still part of the current clue and is usable
+        moveTo(nextRow, nextCol, currentDirection);
+      } else {
+        // If we can't find an empty cell in the current word, try to move one step
+        // and let moveRelative/moveTo handle boundary conditions (like end of word).
+        // This maintains existing behavior if no empty cell is found to skip to.
+        moveRelative(dRow, dCol);
+      }
+    }, [
+      currentDirection,
+      focusedRow,
+      focusedCol,
+      getCellData,
+      moveTo,
+      currentNumber,
+      moveRelative,
+    ]);
 
     const moveBackward = useCallback(() => {
       const across = isAcross(currentDirection);
@@ -1045,7 +1083,7 @@ const CrosswordProvider = React.forwardRef<
         isCrosswordCorrect: () => crosswordCorrect,
 
         /**
-         * Sets the “guess” character for a specific grid position.
+         * Sets the "guess" character for a specific grid position.
          *
          * @since 4.1.0
          */

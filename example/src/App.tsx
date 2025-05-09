@@ -13,19 +13,55 @@ import styled from 'styled-components';
 
 const data = {
   across: {
-    1: {
-      clue: 'one plus one',
-      answer: 'TWO',
+    '1': {
+      clue: 'Greeting',
+      answer: 'HELLO',
       row: 0,
+      col: 0,
+    },
+    '6': {
+      clue: 'Planet Earth',
+      answer: 'WORLD',
+      row: 2,
+      col: 0,
+    },
+    '11': {
+      clue: 'Once more',
+      answer: 'AGAIN',
+      row: 4,
       col: 0,
     },
   },
   down: {
-    2: {
-      clue: 'three minus two',
-      answer: 'ONE',
+    '1': {
+      clue: 'Start of 1, 6, 11 Across',
+      answer: 'HWA',
+      row: 0,
+      col: 0,
+    },
+    '2': {
+      clue: 'Second letter of 1, 6, 11 Across',
+      answer: 'EOG',
+      row: 0,
+      col: 1,
+    },
+    '3': {
+      clue: 'Middle letter of 1, 6, 11 Across',
+      answer: 'LRA',
       row: 0,
       col: 2,
+    },
+    '4': {
+      clue: 'Fourth letter of 1, 6, 11 Across',
+      answer: 'LLI',
+      row: 0,
+      col: 3,
+    },
+    '5': {
+      clue: 'End of 1, 6, 11 Across',
+      answer: 'ODN',
+      row: 0,
+      col: 4,
     },
   },
 };
@@ -543,7 +579,7 @@ function App() {
       </CrosswordMessageBlock>
 
       <p>
-        And here’s a decomposed version, showing more control of the individual
+        And here's a decomposed version, showing more control of the individual
         components (intended for specific layout needs).
       </p>
 
